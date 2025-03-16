@@ -25,6 +25,9 @@ public class SetmealServiceImpl extends ServiceImpl<SetmealMapper, Setmeal> impl
     @Autowired
     private SetmealDishService setmealDishService;
 
+    @Autowired
+    private SetmealMapper setmealMapper;
+
 
     /**
      * 新增套餐，同时需要保存套餐和菜品的关联关系
@@ -91,5 +94,16 @@ public class SetmealServiceImpl extends ServiceImpl<SetmealMapper, Setmeal> impl
         lambdaQueryWrapper.in(SetmealDish::getSetmealId, ids);
 
         setmealDishService.remove(lambdaQueryWrapper);
+    }
+
+    /**
+     * 根据id查询套餐详情信息，包括套餐关联的菜品集合
+     * 修改套餐中套餐详情数据回显
+     * @param id
+     * @return
+     */
+    @Override
+    public SetmealDto findById(Long id) {
+        return setmealMapper.findById(id);
     }
 }

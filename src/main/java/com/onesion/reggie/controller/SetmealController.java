@@ -12,7 +12,6 @@ import com.onesion.reggie.service.SetmealService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -115,5 +114,17 @@ public class SetmealController {
         setmealService.removeWithDish(ids);
 
         return R.success("套餐数据删除成功");
+    }
+
+    /**
+     * 根据id查询套餐详情信息
+     * 修改套餐中，套餐详情数据回显
+     */
+    @GetMapping("{id}")
+    public R<SetmealDto> findById(@PathVariable Long id) {
+
+        SetmealDto setmealDto = setmealService.findById(id);
+
+        return R.success(setmealDto);
     }
 }
