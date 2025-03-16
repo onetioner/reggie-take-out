@@ -60,4 +60,19 @@ public class AddressBookController {
 
         return R.success(addressBook);
     }
+
+    /**
+     * 根据id查询地址
+     */
+    @GetMapping("/{id}")
+    public R get(@PathVariable Long id) {
+
+        AddressBook addressBook = addressBookService.getById(id);
+
+        if (addressBook != null) {
+            return R.success(addressBook);
+        } else {
+            return R.error("没有找到该对象");
+        }
+    }
 }
