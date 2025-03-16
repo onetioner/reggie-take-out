@@ -57,7 +57,11 @@ public class LoginCheckFilter implements Filter {
                 "/front/**",
                 "/common/**",  // 这里对上传下载不登录也是可以访问的
                 "/user/sendMsg",
-                "/user/login"
+                "/user/login",
+                "/doc.html",
+                "/webjars/**",
+                "/swagger-resources",
+                "/v2/api-docs"
         };
 
         // 2. 判断本次请求是否需要处理
