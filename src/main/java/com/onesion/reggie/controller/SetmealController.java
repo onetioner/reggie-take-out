@@ -12,6 +12,7 @@ import com.onesion.reggie.service.SetmealService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -147,6 +148,7 @@ public class SetmealController {
      * @param setmeal
      * @return
      */
+    @Cacheable(value = "setmealCache", key = "#setmeal.categoryId + '_' + #setmeal.status")  // 加入这个Cacheable注解。这个key跟当前查询条件有关系，可以是id和status
     @GetMapping("list")
     public R<List<Setmeal>> list(Setmeal setmeal) {
 
