@@ -106,4 +106,30 @@ public class ShoppingCartController {
         return R.success("清空购物车成功");
     }
 
+    /**
+     * 添加/删除购物项
+     * @return
+     */
+    @PostMapping("/sub")
+    public R<ShoppingCart> sub(@RequestBody ShoppingCart shoppingCart) {
+
+        // 1. 根据用户id、提交dishId|setmealId，查询菜品|套餐，判断购物车商品的数量
+        // select * from shopping_cart where user_id = ? and dish_id = ?
+        ShoppingCart cart = shoppingCartService.query()
+                .eq("user_id", BaseContext.getCurrentId())
+                .eq(shoppingCart.getDishId() != null, "dish_id", shoppingCart.getDishId())
+                .eq(shoppingCart.getSetmealId() != null, "setmeal_id",
+                        shoppingCart.getSetmealId())
+                .one();
+
+        if (cart.getNumber() > 1) {
+            cart.setNumber(cart.getNumber() - 1);
+            shoppingCartService.updateById(cart);
+        } else {
+            shoppingCartService.removeById(cart.getId());
+            cart.setNumber(0);
+        }
+
+        return R.success(cart);
+    }
 }
