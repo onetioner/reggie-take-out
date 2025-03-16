@@ -10,6 +10,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 /**
  * 地址簿管理
  */
@@ -96,5 +98,24 @@ public class AddressBookController {
             return R.success(addressBook);
         }
 
+    }
+
+    /**
+     * 查询指定用户的全部地址
+     * 根据当前登录用户ID，查询所有的地址列表
+     */
+    @GetMapping("/list")
+    public R<List<AddressBook>> list(AddressBook addressBook) {
+
+        addressBook.setUserId(BaseContext.getCurrentId());
+        log.info("addressBook:{}", addressBook);
+
+        //条件构造器
+        LambdaQueryWrapper<AddressBook> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(null != addressBook.getUserId(), AddressBook::getUserId, addressBook.getUserId());
+        queryWrapper.orderByDesc(AddressBook::getUpdateTime);
+
+        //SQL:select * from address_book where user_id = ? order by update_time desc
+        return R.success(addressBookService.list(queryWrapper));
     }
 }
