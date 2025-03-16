@@ -138,4 +138,25 @@ public class SetmealController {
 
         return R.success("修改成功");
     }
+
+
+    /**
+     * 根据分类id查询套餐列表
+     * 套餐分类id，因为要在移动端显示套餐分类，和其中套餐列表
+     * 根据条件查询套餐数据  day_06菜品展示  Redis缓存 SpringCache注解方式
+     * @param setmeal
+     * @return
+     */
+    @GetMapping("list")
+    public R<List<Setmeal>> list(Setmeal setmeal) {
+
+        LambdaQueryWrapper<Setmeal> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(setmeal.getCategoryId() != null, Setmeal::getCategoryId, setmeal.getCategoryId());
+        queryWrapper.eq(setmeal.getStatus() != null, Setmeal::getStatus, setmeal.getStatus());
+        queryWrapper.orderByDesc(Setmeal::getUpdateTime);
+
+        List<Setmeal> list = setmealService.list(queryWrapper);
+
+        return R.success(list);
+    }
 }
