@@ -28,8 +28,8 @@ public class MyMetaObjectHandler implements MetaObjectHandler {
         setFieldValByName("createTime", LocalDateTime.now(), metaObject);
         setFieldValByName("updateTime", LocalDateTime.now(), metaObject);
 
-        setFieldValByName("createUser", 1L, metaObject);
-        setFieldValByName("updateUser", 1L, metaObject);
+        setFieldValByName("createUser", BaseContext.getCurrentId(), metaObject);
+        setFieldValByName("updateUser", BaseContext.getCurrentId(), metaObject);
 
     }
 
@@ -45,7 +45,7 @@ public class MyMetaObjectHandler implements MetaObjectHandler {
         log.info(metaObject.toString());
 
         setFieldValByName("updateTime", LocalDateTime.now(), metaObject);
-        setFieldValByName("updateUser", 1L, metaObject);
+        setFieldValByName("updateUser", BaseContext.getCurrentId(), metaObject);
 
     }
 }
