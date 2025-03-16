@@ -55,6 +55,9 @@ public class LoginCheckFilter implements Filter {
                 "employee/logout",
                 "/backend/**",
                 "/front/**",
+                "/common/**",  // 这里对上传下载不登录也是可以访问的
+                "/user/sendMsg",
+                "/user/login"
         };
 
         // 2. 判断本次请求是否需要处理
@@ -67,7 +70,7 @@ public class LoginCheckFilter implements Filter {
             return;
         }
 
-        // 4. 判断登录状态，如果已登录，则直接放行  这个是后台员工登录
+        // 4-1. 判断登录状态，如果已登录，则直接放行  这个是后台员工登录
         if(request.getSession().getAttribute("employee") != null) {
             log.info("用户已登录，用户id为：{}", request.getSession().getAttribute("employee"));
 
@@ -75,6 +78,22 @@ public class LoginCheckFilter implements Filter {
 
             // ThreadLocal相关的工具类 将当前员工id存放到ThreadLocal中
             BaseContext.setCurrentId(empId);
+
+//            long id = Thread.currentThread().getId();
+//            log.info("线程id为：{}", id);
+
+            filterChain.doFilter(request, response);
+            return;
+        }
+
+        // 4-2. 判断登录状态，如果已登录，则直接放行  // 这个是用户登录
+        if(request.getSession().getAttribute("user") != null) {
+            log.info("用户已登录，用户id为：{}", request.getSession().getAttribute("user"));
+
+            Long userId = (Long)request.getSession().getAttribute("user");
+
+            // ThreadLocal相关的工具类 将当前用户id存放到ThreadLocal中
+            BaseContext.setCurrentId(userId);
 
 //            long id = Thread.currentThread().getId();
 //            log.info("线程id为：{}", id);
