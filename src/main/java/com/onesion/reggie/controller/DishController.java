@@ -76,6 +76,16 @@ public class DishController {
 
         dishService.saveWithFlavor(dishDto);
 
+        // 保存菜品，清空redis缓存数据，以下两种方式，推荐第二种
+
+        // 第一种：清理所有菜品的缓存数据
+        // Set keys = redisTemplate.keys("dish_*");
+        // redisTemplate.delete(keys);
+
+        // 第二种：清理某个分类下面的菜品缓存数据
+        String key = "dish_" + dishDto.getCategoryId() + "_1";
+        redisTemplate.delete(key);
+
         return R.success("新增菜品成功");
     }
 
@@ -157,6 +167,16 @@ public class DishController {
         log.info(dishDto.toString());
 
         dishService.updateWithFlavor(dishDto);
+
+        // 更新菜品，清空redis缓存数据
+
+        // 第一种：清理所有菜品的缓存数据
+        // Set keys = redisTemplate.keys("dish_*");
+        // redisTemplate.delete(keys);
+
+        // 第二种：清理某个分类下面的菜品缓存数据
+        String key = "dish_" + dishDto.getCategoryId() + "_1"; // 这个状态可以写死
+        redisTemplate.delete(key);
 
         return R.success("新增菜品成功");
     }
