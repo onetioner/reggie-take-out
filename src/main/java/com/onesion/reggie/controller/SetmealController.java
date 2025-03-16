@@ -12,6 +12,7 @@ import com.onesion.reggie.service.SetmealService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -99,5 +100,20 @@ public class SetmealController {
         dtoPage.setRecords(list);
 
         return R.success(dtoPage);
+    }
+
+    /**
+     * 删除套餐 单个删除和批量删除都可以
+     * @param ids
+     * @return
+     */
+    @DeleteMapping
+    public R<String> delete(@RequestParam List<Long> ids) {
+
+        log.info("ids:{}", ids);
+
+        setmealService.removeWithDish(ids);
+
+        return R.success("套餐数据删除成功");
     }
 }
