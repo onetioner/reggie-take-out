@@ -13,9 +13,11 @@ import com.onesion.reggie.service.DishService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 /**
@@ -34,6 +36,9 @@ public class DishController {
 
     @Autowired
     private CategoryService categoryService;
+
+    @Autowired
+    private RedisTemplate redisTemplate;  // 注入redisTemplate对象
 
 
     /**
@@ -166,6 +171,22 @@ public class DishController {
 
         List<DishDto> dishDtoList = null;
 
+        // 动态的构造key
+        String key = "dish_" + dish.getCategoryId() + "_" + dish.getStatus();  // dish_1632269854829404162_1
+
+        // 先从Redis中获取缓存数据
+        // 关键是这个key是哪个，刚才我们也强调了，缓存这个菜品数据，它不是一份，而应该是多份，就是因为查询的时候需要根据分类来进行查询
+        // 所以说应该是我们对应每一个分类下面的这些菜品应该对应的就是一份缓存数据
+        // 所以这个key，就需要根据分类它的id，然后去区分，在这里提交过来的请求就有id，和status，所以这个key可以动态的来构造一下
+        dishDtoList = (List<DishDto>) redisTemplate.opsForValue().get(key);
+        // 这个返回的是什么呢？主要看我们缓存进去的是什么，
+        // 我们希望是缓存进去List<DishDto>，这个dishDtoList往前面提一下，放到前面List<DishDto> dishDtoList = null;
+
+        if (dishDtoList != null) {
+            // 如果存在，直接返回，无需查询数据库
+            return R.success(dishDtoList);
+        }
+
         //构造查询条件
         LambdaQueryWrapper<Dish> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(dish.getCategoryId() != null, Dish::getCategoryId, dish.getCategoryId());
@@ -216,6 +237,9 @@ public class DishController {
             return dishDto;
 
         }).collect(Collectors.toList());
+
+        // 如果不存在，需要查询数据库，将查询到的菜品数据缓存到Redis 将这个集合对象缓存
+        redisTemplate.opsForValue().set(key, dishDtoList, 60, TimeUnit.MINUTES);
 
         return R.success(dishDtoList);
     }
