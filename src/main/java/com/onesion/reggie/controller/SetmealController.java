@@ -127,4 +127,15 @@ public class SetmealController {
 
         return R.success(setmealDto);
     }
+
+    /**
+     * 修改套餐信息
+     */
+    @PutMapping
+    public R<String> update(@RequestBody SetmealDto setmealDto) {
+
+        setmealService.updateWithDish(setmealDto);
+
+        return R.success("修改成功");
+    }
 }

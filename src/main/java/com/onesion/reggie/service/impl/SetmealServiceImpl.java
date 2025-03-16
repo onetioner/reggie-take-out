@@ -106,4 +106,28 @@ public class SetmealServiceImpl extends ServiceImpl<SetmealMapper, Setmeal> impl
     public SetmealDto findById(Long id) {
         return setmealMapper.findById(id);
     }
+
+    /**
+     * 修改套餐
+     * @param setmealDto
+     */
+    @Override
+    @Transactional
+    public void updateWithDish(SetmealDto setmealDto) {
+
+        //1. 更新套餐表数据 setmeal
+        this.updateById(setmealDto);
+
+        //2. 更新套餐菜品关联数据 setmeal_dish，先删除再添加
+        //delete from setmeal_dish where setmeal_id=?
+        setmealDishService.update()
+                .eq("setmeal_id", setmealDto.getId())
+                .remove();
+        List<SetmealDish> setmealDishes = setmealDto.getSetmealDishes();
+
+        //TODO 给每一个SetmealDish设置setmealId
+        setmealDishes.forEach(setmealDish -> setmealDish.setSetmealId(setmealDto.getId()));
+
+        setmealDishService.saveBatch(setmealDishes);
+    }
 }
