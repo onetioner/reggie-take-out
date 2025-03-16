@@ -1,5 +1,6 @@
 package com.onesion.reggie.controller;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.onesion.reggie.common.BaseContext;
 import com.onesion.reggie.common.R;
@@ -74,5 +75,26 @@ public class AddressBookController {
         } else {
             return R.error("没有找到该对象");
         }
+    }
+
+    /**
+     * 查询默认地址
+     */
+    @GetMapping("default")
+    public R<AddressBook> getDefault() {
+
+        LambdaQueryWrapper<AddressBook> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(AddressBook::getUserId, BaseContext.getCurrentId());
+        queryWrapper.eq(AddressBook::getIsDefault, 1);
+
+        //SQL:select * from address_book where user_id = ? and is_default = 1
+        AddressBook addressBook = addressBookService.getOne(queryWrapper);
+
+        if (null == addressBook) {
+            return R.error("没有找到该对象");
+        } else {
+            return R.success(addressBook);
+        }
+
     }
 }
