@@ -2,14 +2,13 @@ package com.onesion.reggie.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.onesion.reggie.common.R;
+import com.onesion.reggie.dto.DishDto;
 import com.onesion.reggie.entity.Dish;
 import com.onesion.reggie.service.DishFlavorService;
 import com.onesion.reggie.service.DishService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -49,6 +48,21 @@ public class DishController {
         List<Dish> list = dishService.list(queryWrapper);
 
         return R.success(list);
+    }
+
+    /**
+     * 新增菜品
+     * @param dishDto
+     * @return
+     */
+    @PostMapping
+    public R<String> save(@RequestBody DishDto dishDto) {
+
+        log.info(dishDto.toString());
+
+        dishService.saveWithFlavor(dishDto);
+
+        return R.success("新增菜品成功");
     }
 
 }
